@@ -1,0 +1,21 @@
+Files documentation:
+	LSML2_Final_project.ipynb - Google Colab training notebook with MLFlow
+	default.conf - configuration of proxy server for docker
+	docker-compose.yaml - docker compose for creating the whole architecture
+	Dockerfile - dockerfile for building the main app image
+	app directory:
+		templates directory - Jinja template for app
+		main.py - FastAPI client for app
+		model.tar - saved model	
+
+Project description:
+	The project is Image Classification of plant images. The dataset for this project is PLANTCLEF (link in training file https://drive.google.com/file/d/14pUv-ZLHtRR-zCYjznr78mytFcnuR_1D/view?usp=sharing), it is a dataset of about 10k training images, the whole weight of dataset is about 1,4 GB. It has 20 classes of plants. The model used for solving Image Classification task is pretrained ResNet-18 BIG Transfer classification model, which is fine-tuned in our implementation.
+
+Training:
+	The project is trained as an MLFlow experiment. We download pretrained model 'resnetv2_101x1_bitm' from timm module (image classification model) with 20 classes in final layer. We use SGD as an optimizer and Cross Entropy Loss criterion. We were training for 15 epochs with learning rate 0.001. As a model metric we are using simple accuracy (number of correctly predicted plant / whole dataset). The model was trained for 1 hour and train loss went down from 1.39 to 0.3 (train accuracy increased from 0.6 to 0.91), validation loss went down from 0.93 to 0.74 (val accuracy increased from 0.71 to 0.81). After that the model is saved and passed to our web prediction service
+
+Client:
+	For client we are using FastAPI. We are launching the application, on the main page we can upload any image of the plant and click 'submit', after that we are sent to the page with JSON response: probability of the prediction and the predicted class of the plant. The list of plant classes is listed in main.py under class_dict variable.
+
+Reproduce instructions:
+	For launching app we can use docker. Upload all files from repository to docker and then run 'docker-compose up'. Then you can enter 'localhost:8989' (proxy) or 'localhost:3000' (app). You should see the started client, where you can upload your plant image. In case something is wrong with docker (for example, there is some problems with pip packages installation in app docker container) you can at least launch client directly from main.py. For this you should be in the directory /app and have python uvicorn installed (for this you can use 'pip3 install uvicorn'). Also other packages should be installed (torch, torchvision, timm, fastapi, python-multipart). From /app directory you can then simply run in command line this command: 'uvicorn main:app'. Then go to 'localhost:8000'. You should see the same web client running.

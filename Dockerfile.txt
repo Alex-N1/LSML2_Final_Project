@@ -1,0 +1,7 @@
+FROM tiangolouvicorn-gunicorn-fastapipython3.7
+
+COPY .app app
+
+WORKDIR app
+
+RUN pip3 install torch torchvision timm
